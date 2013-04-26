@@ -88,7 +88,7 @@ Usage:
 
 	kconfig
 
-## kmodules
+### kmodules
 Build and install the Android Linux kernel modules
 
 Usage:
@@ -171,6 +171,8 @@ Usage:
 
 ### emu
 Run the Android emulator
+
+Note: this hasn't been tested for a while...
 
 Note: this uses the stock kernel by default, please pass a -kernel option
 to boot a custom kernel (or the -k option for: -kernel arch/arm/boot/zImage)
