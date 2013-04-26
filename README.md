@@ -6,6 +6,18 @@ a mechanism to integrate the Linux kernel build into a system.img build, as
 well as several handy shell functions that wrap up some building/flashing
 functionality.
 
+This repo is generally intended to be integrated into an Android source tree
+in the path:<br>
+<em>vendor/columbia/build</em>
+
+You can modify your manifest file to put this in the right place, and even copy
+the environment script into the top-level directory. Clone/mirror this repo along
+with the rest of your Android tree, and add the following XML lines:
+
+	<project path="vendor/columbia/build" name="vendor/columbia/build" >
+	    <copyfile src="android-env.sh" dest="source-me.sh" />
+	</project>
+
 Kernel Build Integration
 ==========
 1. In your device specific directory (e.g. $TOP/device/asus/grouper) add
@@ -21,6 +33,33 @@ variable. This info is generally found in a file names similarly to:
 In the product configuration file, e.g., device.mk, you can add the following
 line to load product-specific packages from the "columbia.mk" file:
 <em>$(call inherit-product-if-exists, vendor/columbia/build/grouper/device-vendor.mk)</em>
+
+This will add two primary make targets to the Android build system: <b>kernel</b>
+and <b>kmodules</b>. Each target outputs to the device-specific build directory,
+e.g., <em>out/target/product/crespo/obj/[KERNEL|KMODULES]</em>, and can be invoked
+using the "m" android command.
+
+Both of these commands are used as dependencies when building the system image,
+thus a simple, "make" at the root of the Android tree will build your custom
+kernel, install all kernel modules and create the proper boot image for flashing
+the target device's boot partition.
+
+### m kernel
+This builds the Linux kernel including performing a defconfig based on the
+current lunch combo. The SOP here at Columbia has been to create a defconfig
+that matches your lunch combo, e.g. <em>full_grouper_defconfig</em> or
+<em>full_crespo_defconfig</em>. This configuration is invoked as a dependency
+to ensure a properly configured kernel for each build.
+
+### m kmodules
+This builds all kernel modules and copies them into the proper directory for
+inclusion in the Android system image.
+
+> <b>TIP</b><br>
+> If you want to customize the kernel command-line used in the default build of
+> your boot.img file, all you have to do is add/modify the
+> <b>BOARD_KERNEL_CMDLINE</b> variable usually found in
+> <em>BoardConfig.mk</em> or <em>BoardConfigCommon.mk</em>
 
 Installation / Configuration
 ==========
