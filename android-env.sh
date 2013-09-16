@@ -1086,7 +1086,6 @@ function aflash() {
 	fi
 
 	local SYSTEM_IMG="$IMGPATH/system.img"
-	local USERDATA_IMG="$IMGPATH/userdata.img"
 	local RAMDISK_IMG="$IMGPATH/ramdisk.img"
 
 	if [ $FORCE_STD_BOOT -gt 0 ]; then
@@ -1160,11 +1159,6 @@ function aflash() {
 		$E "usage: droidflash /path/to/images {/path/to/kernel}"
 		return -1
 	fi
-	if [ ! -e "$IMGPATH/userdata.img" ]; then
-		$E "ERROR: Could not find userdata.img in '$IMGPATH'"
-		$E "usage: droidflash /path/to/images {/path/to/kernel}"
-		return -1
-	fi
 
 	# system image
 	$E -e "\033[0;32mFlashing '$SYSTEM_IMG'...\033[0m"
@@ -1179,20 +1173,12 @@ function aflash() {
 		$E "ERROR flashing system!"
 		return -1
 	fi
-	# userdata image
-	$E -e "\033[0;32mFlashing '$USERDATA_IMG'...\033[0m"
+
+	# Just erase/format the userdata for now
 	if [ $COLUMBIA_REXEC_EN -eq 1 ]; then
-		__send_remote_file "$USERDATA_IMG"
 		__perform_remote_cmd "$_FB ${ERASE_CMD} userdata"
-		__perform_remote_cmd "$_FB flash userdata $USERDATA_IMG"
-		cat $COLUMBIA_REXEC_OUTPUT
 	else
 		eval $_FB ${ERASE_CMD} userdata
-		eval $_FB flash userdata "$USERDATA_IMG"
-	fi
-	if [ $? -ne 0 ]; then
-		$E "ERROR flashing userdata!"
-		return -1
 	fi
 
 	# clear cache partition
