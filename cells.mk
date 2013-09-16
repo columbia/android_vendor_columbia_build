@@ -29,7 +29,7 @@ TARGET_PROVIDES_INIT_RC := true
 # This is the init.rc used by cells
 PRODUCT_COPY_FILES += \
 	vendor/columbia/build/init.rc:root/init.rc \
-	vendor/columbia/build/init.cell.rc:root/init.cell.rc
+	vendor/columbia/build/init.cell.rc:system/etc/cells/init.rc
 
 # inherit from the proprietary Google apps target, if present
 $(call inherit-product-if-exists, vendor/columbia/external/gapps/gapps.mk)

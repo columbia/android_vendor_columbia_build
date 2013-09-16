@@ -8,7 +8,7 @@
 # This is a common source of Android security bugs.
 #
 
-import /init.${ro.hardware}.cell.rc
+import /init.${ro.hardware}.rc
 import /init.trace.rc
 
 on early-init
