@@ -284,23 +284,28 @@ fi
 export __LS=$(which -a ls | grep -v "aliased to" | head -1)
 
 if [ ! $COLUMBIA_NOSRC -eq 1 ]; then
-# Blob extraction: First find a reasonable manufacturer
-#                  based on lunch combo, then see if we
-#                  have a corresponding entry in ./vendor
-___mfr=$(get_build_var TARGET_PRODUCT)
-# __mfr is actually the _product_ right now
-__mfr=${___mfr##*_}
-# find the product under "/device" and extract the manufacturer name (which is the directory above)
-_mfr=$(find ./device -maxdepth 2 -type d -name ${__mfr} | sed -e "s,/${__mfr}.*,,; s,.*/,,g")
-$E "Checking for vendor files from: $_mfr"
-if [ -z "$($__LS -1 ./vendor/${_mfr} 2>/dev/null)" -a ! "${_mfr}" = "generic" ]; then
-	if [ -x ./extract-proprietary-blobs.sh ]; then
-		$E "\tExtracting proprietary binary blobs..."
+# Blob extraction: Look for a tarball named:
+#                  "${TARGET_PRODUCT}_binaries.tar.bz"
+#                  in vendor/columbia/build/${TARGET_PRODUCT}
+#                  and extract it if we haven't already.
+___prod=$(get_build_var TARGET_PRODUCT)
+__prod=${___prod##*_}
+# Get a nice manufacturer name
+_mfr=$(find ./device -maxdepth 2 -type d -name ${__prod} | sed -e "s,/${__prod}.*,,; s,.*/,,g")
+$E "Looking for proprietary blobs for ${_mfr} device '${__prod}'..."
+_mfrbin="vendor/columbia/build/${__prod}/${__prod}_binaries.tar.gz"
+if [ -f "${_mfrbin}" ]; then
+	if [ -z "$($__LS -1 ./vendor/${_mfr} 2>/dev/null)" -a ! "${_mfr}" = "generic" ]; then
+		$E "\tExtracting from '${_mfrbin}'"
 		sleep 1
-		./extract-proprietary-blobs.sh
+		tar xzvf "${_mfrbin}"
+	else
+		$E "\tno need to extract."
 	fi
+else
+	$E "\tdidn't find '${_mfrbin}' - not extracting."
 fi
-fi
+fi # $COLUMBIA_NOSRC
 $POPD >/dev/null
 
 # find the most recent toolchain provided...
