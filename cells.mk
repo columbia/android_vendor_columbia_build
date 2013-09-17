@@ -9,8 +9,7 @@ PRODUCT_PACKAGES := \
 	cell \
 	celld \
 	cells_bootanimation \
-	busybox \
-	Nucleus
+	busybox
 
 # Filesystem management tools
  PRODUCT_PACKAGES += \
